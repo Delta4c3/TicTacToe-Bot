@@ -12,6 +12,7 @@ from picamera.array import PiRGBArray
 from picamera import PiCamera
 from PIL import Image
 
+
 class Camera(object):
     def __init__(self, resolution=cfg.IMAGE_RESOLUTION):
         self.camera = None
@@ -38,8 +39,10 @@ class Camera(object):
         box_height = int(cfg.TAC_BOX_Y / 2)
         zone = None
         for i, (zone_x, zone_y) in enumerate(cfg.TAC_BOX_CENTERS):
-            newimg_crop = processed_img_new[zone_x - box_width:zone_x + box_width, zone_y - box_height:zone_y + box_height]
-            oldimg_crop = self.pre_move_img[zone_x - box_width:zone_x + box_width, zone_y - box_height:zone_y + box_height]
+            newimg_crop = processed_img_new[zone_x - box_width:zone_x + box_width,
+                          zone_y - box_height:zone_y + box_height]
+            oldimg_crop = self.pre_move_img[zone_x - box_width:zone_x + box_width,
+                          zone_y - box_height:zone_y + box_height]
             zonediff = np.sum(cv2.absdiff(newimg_crop, oldimg_crop)) / (cfg.TAC_BOX_X * cfg.TAC_BOX_Y)
 
             if cfg.DEBUG_MODE:
@@ -57,7 +60,8 @@ class Camera(object):
         image = self._capture_image()
         processed_img_new = self.preprocess_image(image)
 
-        motion_diff = np.sum(cv2.absdiff(self.pre_move_img, processed_img_new)) / (cfg.IMAGE_RESOLUTION[0] * cfg.IMAGE_RESOLUTION[1])
+        motion_diff = np.sum(cv2.absdiff(self.pre_move_img, processed_img_new)) / (
+                    cfg.IMAGE_RESOLUTION[0] * cfg.IMAGE_RESOLUTION[1])
         if cfg.DEBUG_MODE:
             print('identify motion diff:', motion_diff)
 
@@ -103,17 +107,18 @@ class Camera(object):
         if cfg.DEBUG_MODE:
             debug_save_img(img, '{}_{}_raw.jpg'.format(self.pic_series, self.pic_type))
 
-        gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-        blur = cv2.GaussianBlur(gray,(5,5),0)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        blur = cv2.GaussianBlur(gray, (5, 5), 0)
 
         if cfg.DEBUG_MODE:
             debug_save_img(blur, '{}_{}_blur.jpg'.format(self.pic_series, self.pic_type))
 
         # Transform image perspective
         pts1 = np.float32([cfg.p0, cfg.p1, cfg.p2, cfg.p3])
-        pts2 = np.float32([[0,0],[cfg.POST_TRANSFORM_RES[0],0],[0,cfg.POST_TRANSFORM_RES[1]],cfg.POST_TRANSFORM_RES])
-        M = cv2.getPerspectiveTransform(pts1,pts2)
-        blur_crop = cv2.warpPerspective(blur,M,(cfg.POST_TRANSFORM_RES[0],cfg.POST_TRANSFORM_RES[1]))
+        pts2 = np.float32(
+            [[0, 0], [cfg.POST_TRANSFORM_RES[0], 0], [0, cfg.POST_TRANSFORM_RES[1]], cfg.POST_TRANSFORM_RES])
+        M = cv2.getPerspectiveTransform(pts1, pts2)
+        blur_crop = cv2.warpPerspective(blur, M, (cfg.POST_TRANSFORM_RES[0], cfg.POST_TRANSFORM_RES[1]))
         if cfg.DEBUG_MODE:
             debug_save_img(blur_crop, '{}_{}_transform.jpg'.format(self.pic_series, self.pic_type))
 
@@ -122,7 +127,7 @@ class Camera(object):
     @staticmethod
     def load_offset_image(filepath, filename):
         import_img = cv2.imread(os.path.join(filepath, filename))
-        return cv2.cvtColor(import_img,cv2.COLOR_BGR2GRAY)
+        return cv2.cvtColor(import_img, cv2.COLOR_BGR2GRAY)
 
 
 def debug_save_img(img, imgname):
@@ -130,9 +135,9 @@ def debug_save_img(img, imgname):
     im.save(os.path.join('/home/pi/imgs', imgname))
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     c = Camera()
     c.locate_user_move_prep()
     _ = input('press enter to continue...')
-    result = c.locate_user_move([True]*9)
+    result = c.locate_user_move([True] * 9)
     print(result)

@@ -36,15 +36,15 @@ def main():
 
             # Start game
             if game_function == 'standard':
-                standard_game(scarabot, cam, spkr, bot_first = bot_first)
+                standard_game(scarabot, cam, spkr, bot_first=bot_first)
             elif game_function == 'meme':
-                meme_game(scarabot, cam, spkr, bot_first = bot_first)
+                meme_game(scarabot, cam, spkr, bot_first=bot_first)
 
             scarabot.park()
-                
+
     except Exception as e:
         raise e
 
 
-if __name__=='__main__':
-    # main()
+if __name__ == '__main__':
+    main()

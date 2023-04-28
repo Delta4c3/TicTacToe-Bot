@@ -5,8 +5,9 @@ import math
 import Config as cfg
 from time import sleep
 
+
 class Move(object):
-    def __init__(self, score = None, xindex = None, yindex = None):
+    def __init__(self, score=None, xindex=None, yindex=None):
         self.x = xindex
         self.y = yindex
         self.score = score
@@ -19,7 +20,7 @@ class Move(object):
 
 class TacBoard(object):
     def __init__(self):
-        self.board = np.zeros((3,3))  # 0 is no move, 1 is bot, -1 is user
+        self.board = np.zeros((3, 3))  # 0 is no move, 1 is bot, -1 is user
         self.winners = None  # Flat array with start and end of winning set
 
     def get_free_space_vector(self):
@@ -121,13 +122,13 @@ class TacBoard(object):
                 return setresult
 
         for col in range(3):
-            setresult = check_set(board_array[:,col])
+            setresult = check_set(board_array[:, col])
             if setresult is not 0:
                 self.winners = [col, col + 6]
                 return setresult
 
-        diag1 = ([board_array[0,0], board_array[1,1], board_array[2,2]], [0, 8])
-        diag2 = ([board_array[0,2], board_array[1,1], board_array[2,0]], [2, 6])
+        diag1 = ([board_array[0, 0], board_array[1, 1], board_array[2, 2]], [0, 8])
+        diag2 = ([board_array[0, 2], board_array[1, 1], board_array[2, 0]], [2, 6])
 
         for diagset, winset in [diag1, diag2]:
             setresult = check_set(diagset)
@@ -142,10 +143,10 @@ class TacBoard(object):
 
 
 # Standalone mode for testing
-if __name__=='__main__':
+if __name__ == '__main__':
     tacgame = TacBoard()
     tacgame.board = np.array(
-        [[-1,-1,1],
-        [1,-1,0],
-        [1,1,1]])
+        [[-1, -1, 1],
+         [1, -1, 0],
+         [1, 1, 1]])
     print(tacgame.is_bot_win_possible())
